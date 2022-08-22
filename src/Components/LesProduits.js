@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react"
 import Produit from "./Produit";
 import axios from 'axios';
 
-import PostLoadingComponent from "./PostLoading";
+import PostLoadingComponent from "./ProduitLoading";
 
 function LesProduits(){
 
-  const PostLoading = PostLoadingComponent(Produit);
+  const ProduitLoading = PostLoadingComponent(Produit);
   const [appState, setAppState] = useState({
     loading: false,
     produits: null,
@@ -23,7 +23,7 @@ function LesProduits(){
     return(
       <main>
         <div className="div-lesProduits">
-            <PostLoading isLoading={appState.loading} props={appState.produits}  />
+            <ProduitLoading isLoading={appState.loading} props={appState.produits}  />
         </div>
       </main>
     )

@@ -6,7 +6,7 @@ function PostLoading(Component) {
             <Component key={produit.id} {...produit} />)
             )
         return (
-            <h1>Chargement des données en cours !...</h1>
+            <h1>Recherche des données en cours ! :)</h1>
         )
     }
 }
