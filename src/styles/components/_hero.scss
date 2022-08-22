@@ -1,0 +1,15 @@
+section{
+    display: flex;
+    flex-direction: column; 
+
+    img{
+        max-width: 400px;
+        align-self: center;
+    }
+    h1{
+        align-self: center;
+    }
+    p{
+        align-self: center;
+    }
+}

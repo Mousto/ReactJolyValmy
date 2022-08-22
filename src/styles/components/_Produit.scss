@@ -1,0 +1,17 @@
+.produit-card{
+    width: 150px;
+    font-size: 12px;
+    flex: 0 0 auto;         /* ADD */
+    display: flex;          /* ADD */
+    flex-direction: column; /* ADD */
+}
+.produit--image {
+    max-width: 100%;
+    border-radius: 9px;
+    margin-bottom: 9px;
+}
+.nom--produit{
+    align-self: center;
+    font-weight: bold;
+    font-size: 1rem;
+}
