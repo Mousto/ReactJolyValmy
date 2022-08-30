@@ -1,8 +1,8 @@
-section{
+.hero-section{
     display: flex;
     flex-direction: column; 
 
-    img{
+    .hero-photo{
         max-width: 400px;
         align-self: center;
     }
@@ -12,4 +12,5 @@ section{
     p{
         align-self: center;
     }
+    
 }
