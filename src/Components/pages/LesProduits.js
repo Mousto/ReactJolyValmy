@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react"
-import Produit from "./Produit";
+import CarteProduit from "../CarteProduit";
 import axios from 'axios';
 
-import PostLoadingComponent from "./PostLoading";
+import PostLoadingComponent from "../PostLoading";
 
 function LesProduits(){
 
-  const PostLoading = PostLoadingComponent(Produit);
+  const PostLoading = PostLoadingComponent(CarteProduit);
   const [appState, setAppState] = useState({
     loading: false,
     produits: null,
