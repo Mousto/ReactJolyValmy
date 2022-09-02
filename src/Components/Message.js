@@ -1,7 +1,6 @@
-import React, {useState} from 'react'
+import React from 'react'
 import Toast from 'react-bootstrap/Toast';
 import ToastContainer from 'react-bootstrap/ToastContainer';
-import { useLocation, useNavigate } from 'react-router-dom';
 
 function Message(props){
     //console.log(props.navigate.pathname)
@@ -20,15 +19,13 @@ function Message(props){
                     bg={props.variant}
                     animation={true}
                     show={show} 
-                    onClose={toggleShow}
-                    
+                    onClose={toggleShow} 
                 >
                 <Toast.Header>
                     <img
                         src="holder.js/20x20?text=%20"
                         className="rounded me-2"
                         alt="img"
-                        onClick={props.handelClick}
                     />
                     <strong className="me-auto">{props.titre}</strong>
                 </Toast.Header>

@@ -1,8 +1,7 @@
 // import Component from the react module
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import AxiosInstance from '../../AxiosInstance';
 import { useLocation, useNavigate } from 'react-router-dom';
-import Message from './../Message'
 
 
 
@@ -13,10 +12,8 @@ function Login(){
 		password: '',
 	});
   const navigate = useNavigate();
-  const location = useLocation();
 	const [formData, updateFormData] = useState(initialFormData);
 	const [isError, setIserror] = useState(false);
-	const [reload, setReload] = useState(false);
 
 	const handleChange = (e) => {
 		updateFormData({
@@ -50,10 +47,6 @@ function Login(){
       })
       
 	};
-
-  
-
-  
 
   return(
     <React.StrictMode>
