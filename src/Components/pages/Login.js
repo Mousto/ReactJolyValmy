@@ -1,19 +1,22 @@
 // import Component from the react module
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AxiosInstance from '../../AxiosInstance';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import Message from './../Message'
+
 
 
 function Login(){
-
-  const navigate = useNavigate();
-	
+  
   const initialFormData = Object.freeze({
 		username: '',
 		password: '',
 	});
-
+  const navigate = useNavigate();
+  const location = useLocation();
 	const [formData, updateFormData] = useState(initialFormData);
+	const [isError, setIserror] = useState(false);
+	const [reload, setReload] = useState(false);
 
 	const handleChange = (e) => {
 		updateFormData({
@@ -25,7 +28,6 @@ function Login(){
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		console.log(formData);
 
 		AxiosInstance
 			.post(`token/`, {
@@ -37,16 +39,26 @@ function Login(){
 				localStorage.setItem('refresh_token', res.data.refresh);
 				AxiosInstance.defaults.headers['Authorization'] =
 					'JWT ' + localStorage.getItem('access_token');
-				navigate('/');//Vers accueil
-				console.log(res);
-				console.log(res.data);
-			});
+          navigate('/');//Vers accueil
+				//console.log(res);
+				//console.log(res.data);
+			})
+      .catch(error => { 
+        if(error.request.status === 401){
+          setIserror(true)
+        }
+      })
+      
 	};
 
-    return(
-      <React.StrictMode>
-        <div className="div-connexion-form d-flex justify-content-center align-items-center">
-          <form>
+  
+
+  
+
+  return(
+    <React.StrictMode>
+      <div className="div-connexion-form d-flex justify-content-center align-items-center">
+        <form>
           <h3>Connexion</h3>
           <div className="mb-3">
             <label>Votre nom</label>
@@ -89,6 +101,14 @@ function Login(){
               Oublié <a href="#">password?</a>
           </p>
         </form>
+       {/*  {isError && <Message 
+                      variant='danger' 
+                      titre='Compte inexistant' 
+                      message="Vérifiez vos informations et réessayer"
+                      username={formData.username}
+                      password={formData.password}
+                      handelClick={toastClose}
+                    />}  */}
       </div>
       </React.StrictMode>
     )
