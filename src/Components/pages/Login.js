@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 
 function Login(){
+
   
   const initialFormData = Object.freeze({
 		username: '',
@@ -47,15 +48,18 @@ function Login(){
       })
       
 	};
-
+  const styles = {
+    borderColor: isError ? 'red' : '', 
+  }
   return(
     <React.StrictMode>
-      <div className="div-connexion-form d-flex justify-content-center align-items-center">
+      <div className="div-connexion-form d-flex justify-content-center align-items-center mx-auto mt-5">
         <form>
           <h3>Connexion</h3>
           <div className="mb-3">
             <label>Votre nom</label>
             <input
+              style={styles}
               type="text"
               name="username"
               className="form-control"
@@ -66,6 +70,7 @@ function Login(){
           <div className="mb-3">
             <label>Mot de passe</label>
             <input
+              style={styles}
               type="password"
               name="password"
               className="form-control"
@@ -80,7 +85,7 @@ function Login(){
                 className="custom-control-input"
                 id="customCheck1"
               />
-              <label className="custom-control-label" htmlFor="customCheck1">
+              <label className="custom-control-label mx-1" htmlFor="customCheck1">
                 Souviens toi de moi
               </label>
             </div>
@@ -90,7 +95,7 @@ function Login(){
               Submit
             </button>
           </div>
-          <p className="forgot-password text-right">
+          <p className="forgot-password text-right mt-2">
               Oublié <a href="#">password?</a>
           </p>
         </form>
