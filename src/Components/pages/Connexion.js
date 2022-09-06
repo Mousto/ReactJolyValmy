@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import AxiosInstance from '../../AxiosInstance';
 import { useLocation, useNavigate } from 'react-router-dom';
+import Message from './../Message'
+import { FaUser } from 'react-icons/fa';
 
 
-function Connexion (){
+
+function Connexion (props){
 
     const initialFormData = Object.freeze({
 		email: '',
@@ -11,12 +14,13 @@ function Connexion (){
 	});
   const navigate = useNavigate();
 	const [formData, updateFormData] = useState(initialFormData);
-	const [isError, setIserror] = useState(false);
+	const [isError, setIsError] = useState(false);
+	const [isServerError, setIsServerError] = useState(false);
 
 	const handleChange = (e) => {
 		updateFormData({
 			...formData,
-			// Trimming any whitespace
+			// On enlève les espaces vides
 			[e.target.name]: e.target.value.trim(),
 		});
 	};
@@ -30,19 +34,40 @@ function Connexion (){
 				password: formData.password,
 			})
 			.then((res) => {
-        localStorage.setItem('access_token', res.data.access);
+                localStorage.setItem('access_token', res.data.access);
 				localStorage.setItem('refresh_token', res.data.refresh);
 				AxiosInstance.defaults.headers['Authorization'] =
 					'JWT ' + localStorage.getItem('access_token');
-          navigate('/');//Vers accueil
-				console.log(res);
-				//console.log(res.data);
+                navigate('/');//Vers accueil
+                props.handelClick()
+				//console.log(res);
 			})
-      .catch(error => { 
+            .catch(function (error) {
+                if (error.response) {
+                  // The request was made and the server responded with a status code
+                  // that falls out of the range of 2xx
+                  setIsError(true)
+                  console.log(error.response.data);
+                  console.log(error.response.status);
+                  console.log(error.response.headers);
+                } else if (error.request) {
+                  // The request was made but no response was received
+                  // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                  // http.ClientRequest in node.js
+                  console.log(error.request);
+                } else {
+                  // Something happened in setting up the request that triggered an Error
+                  setIsServerError(true)
+                  //console.log('Erreur', error.message);
+                }
+                console.log(error.config);
+              });
+      /* .catch(error => {
+        // console.log(error)
         if(error.request.status === 401){
           setIserror(true)
         }
-      })
+      }) */
       
 	};
   const styles = {
@@ -60,7 +85,10 @@ function Connexion (){
                         <div className="container">
                         <div className="row">
                             <div className="col-md-9 col-lg-8 mx-auto">
-                            <h3 className="login-heading mb-4">Bienvenu-e !</h3>
+                                <div className="icon-user d-flex align-items-center flex-column">
+                                    <h2 className=''><FaUser /></h2>
+                                    <h3 className="login-heading mb-4"> Bienvenu-e !</h3>
+                                </div>
 
                             {/* <!-- Sign In Form --> */}
                             <form>
@@ -117,6 +145,10 @@ function Connexion (){
                                 </div>
 
                             </form>
+                            {
+                                isServerError &&
+                                 <Message message="Désolé nous ne pouvons répondre à votre requête actuellement. Veuillez recommncer ultérieurement." variant="info" titre='Erreur serveur/réseaux'/>
+                            }
                             </div>
                         </div>
                         </div>

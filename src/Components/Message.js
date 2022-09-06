@@ -1,6 +1,7 @@
 import React from 'react'
 import Toast from 'react-bootstrap/Toast';
 import ToastContainer from 'react-bootstrap/ToastContainer';
+import { FaInfo } from 'react-icons/fa';
 
 function Message(props){
     //console.log(props.navigate.pathname)
@@ -22,11 +23,14 @@ function Message(props){
                     onClose={toggleShow} 
                 >
                 <Toast.Header>
-                    <img
+                    <div className='div-icon-message'>
+                        <FaInfo />
+                    </div>
+                    {/* <img
                         src="holder.js/20x20?text=%20"
                         className="rounded me-2"
                         alt="img"
-                    />
+                    /> */}
                     <strong className="me-auto">{props.titre}</strong>
                 </Toast.Header>
                 <Toast.Body className={props.variant === 'Dark' && 'text-white'}>

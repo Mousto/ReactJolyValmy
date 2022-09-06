@@ -1,9 +1,9 @@
 import React from 'react'
 
-function PostLoading(Component) {
+function PostLoading(Produit) {
     return function PostLoadingComponent({ isLoading, props}) {
         if(!isLoading && props != null) return props.map((produit) => (
-            <Component key={produit.id} {...produit} />)
+            <Produit key={produit.id} {...produit} />)
             )
         return (
             <h1>Recherche des données en cours ! :)</h1>

@@ -2,16 +2,16 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-import Bouton from './Button'
+import { FaHome, FaUser } from 'react-icons/fa';
 
 
-function Barnav() {
+function Barnav(props) {
   return (
     <Navbar sticky="top" collapseOnSelect expand="lg" bg="dark" variant="dark">
       <Container>
-        <Navbar.Brand href="/">Talant-Valmy</Navbar.Brand>
+        <Navbar.Brand href="/"><FaHome /> Talant-Valmy</Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-        <Navbar.Collapse id="responsive-navbar-nav">
+        <Navbar.Collapse className="d-flex" id="responsive-navbar-nav">
           <Nav className="me-auto">
             <Nav.Link href="#">Autre lien</Nav.Link>
             <Nav.Link href="produits">Produits</Nav.Link>
@@ -27,13 +27,21 @@ function Barnav() {
               </NavDropdown.Item>
             </NavDropdown>
           </Nav>
-          <Nav>
-            <Nav.Link href="sign-up">S'inscrire</Nav.Link>
-            <Nav.Link eventKey={2} href="Connexion">
-              Se connecter
-            </Nav.Link>
-          </Nav>
         </Navbar.Collapse>
+        <Nav className="me-auto">
+            <NavDropdown title="Mon compte" id="collasible-nav-dropdown_1">
+              <NavDropdown.Item href="sign-up">S'inscrire</NavDropdown.Item>
+              <NavDropdown.Item href="#action/3.2">
+                Mes commandes
+              </NavDropdown.Item>
+              
+              <NavDropdown.Divider />
+              {!props.bascule && <NavDropdown.Item href="Connexion">
+                Connexion
+              </NavDropdown.Item>}
+              {props.bascule && <NavDropdown.Item href="logout">Déconnexion</NavDropdown.Item>}
+            </NavDropdown>
+          </Nav>
       </Container>
     </Navbar>
   );
