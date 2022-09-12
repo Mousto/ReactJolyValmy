@@ -1,8 +1,20 @@
 import React from 'react'
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
+import { useNavigate } from 'react-router-dom';
 
 function CarteProduit(props){
+    //Pour la navigation
+    const navigate = useNavigate();
+    const commandeProduit = () =>{
+        if(localStorage.getItem('access_token') && localStorage.getItem('access_token') != undefined){
+            navigate('/order-produit')
+        }
+        else{
+            navigate('/connexion')
+        }
+    }          
+
     return (
         <React.StrictMode>
             <Card className='mt-5' style={{ width: '12rem' }}>
@@ -16,7 +28,7 @@ function CarteProduit(props){
                         <span className="prix-enfant"> Prix enfant : {props.prix_enfant} €</span><br/>
                         <span className="prix-adulte"> Prix Adulte : {props.prix_adulte} €</span>
                     </Card.Text>
-                    <Button disabled={!props.disponible} variant="primary">Commander</Button>
+                    <Button disabled={!props.disponible} variant="primary" onClick={commandeProduit}>Commander</Button>
                 </Card.Body>
             </Card>
         </React.StrictMode>

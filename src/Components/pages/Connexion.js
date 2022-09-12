@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import AxiosInstance from '../../AxiosInstance';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Message from './../Message'
 import { FaUser } from 'react-icons/fa';
 
@@ -12,7 +12,7 @@ function Connexion (props){
 		email: '',
 		password: '',
 	});
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 	const [formData, updateFormData] = useState(initialFormData);
 	const [isError, setIsError] = useState(false);
 	const [isServerError, setIsServerError] = useState(false);
@@ -38,7 +38,8 @@ function Connexion (props){
 				localStorage.setItem('refresh_token', res.data.refresh);
 				AxiosInstance.defaults.headers['Authorization'] =
 					'JWT ' + localStorage.getItem('access_token');
-                navigate('/');//Vers accueil
+                //navigate('/');//Vers accueil
+                navigate(-1);//Vers la page précédente
                 props.handelClick()
 				//console.log(res);
 			})
@@ -95,7 +96,7 @@ function Connexion (props){
                                 {
                                 isError && 
                                 <div className="form-floating mb-3 div-erreur-connexion p-2" style={styles}>
-                                    Veuillez entrer le nom d'utilisateur et le mot de passe correctes pour un compte personnel. Noter que les deux champs peuvent être sensibles à la casse.
+                                    Veuillez entrer l'email et le mot de passe correctes pour un compte personnel. Noter que les deux champs peuvent être sensibles à la casse.
                                 </div>
                                 }
                                 <div className="form-floating mb-3">

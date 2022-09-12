@@ -1,0 +1,79 @@
+.counter {
+    display: flex;
+    align-items: flex-end;
+    background-color: #262626;
+    justify-content: center;
+    align-items: center;
+    height: 80px;
+    
+    .nb-billet{
+        color: white;
+        font-size: 1.5rem;
+        margin-right: 5px;
+    }
+}
+
+.counter > button {
+    height: 25px;
+    width: 25px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    background-color: #737373;
+    color: #D9D9D9;
+    font-size: 1rem;
+}
+
+.counter > button:hover {
+    background-color: #404040;
+    color: #D9D9D9;
+}
+
+.counter > button:focus {
+    outline: none;
+}
+
+.counter--count {
+    background-color: white;
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #262626;
+
+    h1{
+        font-size: 1.6rem;
+    }
+}
+
+.counter--plus {
+    margin-left: -10px;
+}
+
+.counter--minus {
+    margin-right: -10px;
+    z-index: 1;
+}
+.les-compteurs{
+    display: flex;
+    justify-content:center;  
+    
+    .compteur-adulte{
+        border-bottom-right-radius: 5px;
+        border-top-right-radius: 5px;
+    }
+    .compteur-enfant{
+        border-bottom-left-radius: 5px;
+        border-top-left-radius: 5px;
+    }
+}
+.paramCommande{
+    display: flex;
+    justify-content:center; 
+    color: white;
+    font-size: 1.5rem;
+    margin-right: 5px;
+    background-color: #262626;
+}
