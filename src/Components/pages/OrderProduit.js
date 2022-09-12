@@ -2,6 +2,7 @@ import React, {useEffect, useState, useRef, useReducer} from 'react';
 import AxiosInstance from '../../AxiosInstance';
 import Badge from 'react-bootstrap/Badge';
 import BasicSelect from '../BasicSelect';
+import Form from 'react-bootstrap/Form';
 
 function OrderProduit (){
     const [produit, setProduit] = useState([])
@@ -78,7 +79,8 @@ function OrderProduit (){
 
     return ( 
         <React.StrictMode>
-            <div className="container-fluid entete-div_commande_produit d-flex justify-content-center row">
+        <Form>
+            <div className="container-fluid entete-div_commande_produit justify-content-center row">
                 <div className="justify-content-center d-flex">
                     <img className="m-1 col-md-1" src={produit.photo} alt='img produit' />
                     <h1 className='col-md-6'>Billets {produit.nom}</h1>
@@ -89,33 +91,49 @@ function OrderProduit (){
                 <div className="les-compteurs row mb-3">
                     <div className="counter compteur-enfant mb-3 col-md-6">
                         <p className='nb-billet m-2'>Billet(s) enfant  </p>
-                        <button className="counter--minus" onClick={() => enfantDispatch({type: 'decrement'})}>–</button>
+                        <button type='button' className="counter--minus" onClick={() => enfantDispatch({type: 'decrement'})}>–</button>
                         <div className="counter--count">
                             <h1>{compteurEnfant}</h1>
                         </div>
-                        <button className="counter--plus" onClick={() => enfantDispatch({type: 'increment'})}>+</button>
+                        <button type='button' className="counter--plus" onClick={() => enfantDispatch({type: 'increment'})}>+</button>
                     </div>
                     <div className="counter compteur-adulte col-md-6">
                         <p className='nb-billet'>Billet(s) adulte </p>
-                        <button className="counter--minus" onClick={() => adulteDispatch({type: 'decrement'})}>–</button>
+                        <button type='button' className="counter--minus" onClick={() => adulteDispatch({type: 'decrement'})}>–</button>
                         <div className="counter--count">
                             <h1>{compteurAdulte}</h1>
                         </div>
-                        <button className="counter--plus" onClick={() => adulteDispatch({type: 'increment'})}>+</button>
+                        <button type='button' className="counter--plus" onClick={() => adulteDispatch({type: 'increment'})}>+</button>
                     </div>
                 </div>
-                <div className="row">
-                    <div className="col-md-6 paramCommande d-flex">
-                        <p className='lieu-retrait '>
-                            Lieu de retrait 
+                 <div className="paramCommande row mb-3 col-md-6">
+                    <div className="counter col-md-6 p-2 mb-3">
+                        <p className='lieu-retrait m-2 '>
+                            Récupérer à
                         </p>
+                        <div className="div-select-lieu m-2">
+                            <BasicSelect />
+                        </div>
                     </div>
-                    <div className="div-select-lieu">
-                        <BasicSelect />
+                    <div className="counter col-md-6  p-2">
+                        <p className='lieu-retrait m-2 '>
+                            Date retrait
+                        </p>
+                        <div className="div-select-lieu m-2">
+                        <Form.Control
+                            type="date"
+                            name="date-retrait"
+                            placeholder="Due date"
+                            //value={date}
+                            //onChange={(e) => setDate(e.target.value)}
+                        />
+                        </div>
                     </div>
+                    
                 </div>
             </div>
             
+        </Form>
         </React.StrictMode>
     )
 }
