@@ -33,16 +33,6 @@ function OrderProduit (){
     const [dateRetrait, setDateRetrait] = useState('')
     const navigate = useNavigate();
     const location = useLocation()
-    const initialFormData = {
-        produit:'',
-        billet_adulte: '',
-        billet_enfant: '',
-        valeur_totale: '',
-        date_retrait: '',
-        lieu_retrait: '',
-        commanditaire: ''
-	};
-    //const [formData, updateFormData] = useState(initialFormData);
 
     const [produit, setProduit] = useState([])
     const [compteurEnfant, enfantDispatch] = useReducer(enfantReducer, 0)
@@ -125,28 +115,8 @@ function OrderProduit (){
         
     }, [compteurAdulte, compteurEnfant])
 
-
-    function _handleSubmit(e){
-        e.preventDefault();
-        initialFormData.produit = location.state.id
-        initialFormData.billet_enfant = compteurEnfant
-        initialFormData.billet_adulte = compteurAdulte
-        initialFormData.valeur_totale = sommeTotale
-        initialFormData.lieu_retrait = lieuRetrait
-        initialFormData.date_retrait = dateRetrait
-        initialFormData.commanditaire = parseJwt(access_token).user_id
-
-        console.log(initialFormData)
-    }
     const handleSubmit = (e) => {
         e.preventDefault();
-        initialFormData.produit = location.state.id
-        initialFormData.billet_enfant = compteurEnfant
-        initialFormData.billet_adulte = compteurAdulte
-        initialFormData.valeur_totale = sommeTotale
-        initialFormData.lieu_retrait = lieuRetrait
-        initialFormData.date_retrait = dateRetrait
-        initialFormData.commanditaire = parseJwt(access_token).user_id
 		AxiosInstance
 			.post(`commandes/`, {
 				produit: location.state.id,
@@ -159,8 +129,7 @@ function OrderProduit (){
 			})
 			.then((res) => {
                 navigate('/');//Vers accueil
-                
-				console.log(res);
+                console.log(res);
 			})
             .catch(function (error) {
                 if (error.response) {
