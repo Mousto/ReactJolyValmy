@@ -1,10 +1,49 @@
 import React, {useEffect, useState, useRef, useReducer} from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import AxiosInstance from '../../AxiosInstance';
 import Badge from 'react-bootstrap/Badge';
 import BasicSelect from '../BasicSelect';
 import Form from 'react-bootstrap/Form';
 
 function OrderProduit (){
+    const access_token = localStorage.getItem('access_token')
+    // Fonction parsseuse de token - besoin de récuperer le id du user -
+    function parseJwt(token) {
+        if (!token) { return; }
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace('-', '+').replace('_', '/');
+        return JSON.parse(window.atob(base64));
+    }
+
+    const options = [
+        {
+          label: 'Séléctionner le lieu de retrait',
+          value: 'Lieu de retrait' 
+        },
+        {
+          label: 'Clinique Bénigne joly',
+          value: 'Talant' 
+        },
+        {
+          label: 'SSR Valmy',
+          value: 'Valmy' 
+        }
+      ]
+    const [lieuRetrait, setLieuRetrait] = useState(options[0].value)
+    const [dateRetrait, setDateRetrait] = useState('')
+    const navigate = useNavigate();
+    const location = useLocation()
+    const initialFormData = {
+        produit:'',
+        billet_adulte: '',
+        billet_enfant: '',
+        valeur_totale: '',
+        date_retrait: '',
+        lieu_retrait: '',
+        commanditaire: ''
+	};
+    //const [formData, updateFormData] = useState(initialFormData);
+
     const [produit, setProduit] = useState([])
     const [compteurEnfant, enfantDispatch] = useReducer(enfantReducer, 0)
     const [compteurAdulte, adulteDispatch] = useReducer(adulteReducer, 0)
@@ -46,36 +85,103 @@ function OrderProduit (){
     
     
     useEffect(() => {
-        AxiosInstance
-            .get(`produits/Bowling`)
-            .then((res) => {
-                setProduit(res.data)
-                prix_billet_adulte.current = res.data.prix_adulte
-                prix_billet_enfant.current = res.data.prix_enfant
-                let st = (prix_billet_adulte.current * compteurAdulte) + (prix_billet_enfant.current * compteurEnfant)
-                setSommeTotale(st)
-                //console.log(res.data);
-            })
-            .catch(function (error) {
-                if (error.response) {
-                    // The request was made and the server responded with a status code
-                    // that falls out of the range of 2xx
-                    console.log(error.response.data);
-                    console.log(error.response.status);
-                    console.log(error.response.headers);
-                } else if (error.request) {
-                    // The request was made but no response was received
-                    // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-                    // http.ClientRequest in node.js
-                    console.log(error.request);
-                } else {
-                    // Something happened in setting up the request that triggered an
-                    //console.log('Erreur', error.message);
-                }
-                //console.log(error.config);
-            });
+        if((localStorage.getItem('access_token') === 'undefined') || (localStorage.getItem('refresh_token') === 'undefined')){
+            navigate('/connexion')
+        }else{
+
+            if(prix_billet_adulte.current === 0){
+                
+                AxiosInstance
+                    .get(`produits/${location.state.nom}`)//location.state.nom : lancer par la page précédente en param 2 de useNavigate
+                    .then((res) => {
+                        setProduit(res.data)
+                        prix_billet_adulte.current = res.data.prix_adulte
+                        prix_billet_enfant.current = res.data.prix_enfant
+                        //console.log(res.data);
+                    })
+                    .catch(function (error) {
+                        if (error.response) {
+                            // The request was made and the server responded with a status code
+                            // that falls out of the range of 2xx
+                            console.log(error.response.data);
+                            console.log(error.response.status);
+                            console.log(error.response.headers);
+                        } else if (error.request) {
+                            // The request was made but no response was received
+                            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                            // http.ClientRequest in node.js
+                            console.log(error.request);
+                        } else {
+                            // Something happened in setting up the request that triggered an
+                            //console.log('Erreur', error.message);
+                        }
+                        //console.log(error.config);
+                    });
+            }
+        }
+        let st = (prix_billet_adulte.current * compteurAdulte) + (prix_billet_enfant.current * compteurEnfant)
+        // Ternaire
+        st.toString().includes('.') ? setSommeTotale(st.toString().replace('.', ',')) : setSommeTotale(st)
+        
     }, [compteurAdulte, compteurEnfant])
 
+
+    function _handleSubmit(e){
+        e.preventDefault();
+        initialFormData.produit = location.state.id
+        initialFormData.billet_enfant = compteurEnfant
+        initialFormData.billet_adulte = compteurAdulte
+        initialFormData.valeur_totale = sommeTotale
+        initialFormData.lieu_retrait = lieuRetrait
+        initialFormData.date_retrait = dateRetrait
+        initialFormData.commanditaire = parseJwt(access_token).user_id
+
+        console.log(initialFormData)
+    }
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        initialFormData.produit = location.state.id
+        initialFormData.billet_enfant = compteurEnfant
+        initialFormData.billet_adulte = compteurAdulte
+        initialFormData.valeur_totale = sommeTotale
+        initialFormData.lieu_retrait = lieuRetrait
+        initialFormData.date_retrait = dateRetrait
+        initialFormData.commanditaire = parseJwt(access_token).user_id
+		AxiosInstance
+			.post(`commandes/`, {
+				produit: location.state.id,
+                billet_adulte: compteurAdulte,
+                billet_enfant: compteurEnfant,
+                valeur_totale: parseFloat(sommeTotale),
+                date_retrait: dateRetrait,
+                lieu_retrait: lieuRetrait,
+                commanditaire: parseJwt(access_token).user_id
+			})
+			.then((res) => {
+                navigate('/');//Vers accueil
+                
+				console.log(res);
+			})
+            .catch(function (error) {
+                if (error.response) {
+                  // The request was made and the server responded with a status code
+                  // that falls out of the range of 2xx
+                  
+                  console.log(error.response.data);
+                  console.log(error.response.status);
+                  console.log(error.response.headers);
+                } else if (error.request) {
+                  // The request was made but no response was received
+                  // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                  // http.ClientRequest in node.js
+                  console.log(error.request);
+                } else {
+                  // Something happened in setting up the request that triggered an Error
+                  //console.log('Erreur', error.message);
+                }
+                console.log(error.config);
+              });
+    }
 
     return ( 
         <React.StrictMode>
@@ -84,35 +190,59 @@ function OrderProduit (){
                 <div className="justify-content-center d-flex">
                     <img className="m-1 col-md-1" src={produit.photo} alt='img produit' />
                     <h1 className='col-md-6'>Billets {produit.nom}</h1>
-                    <h1>
+                    <h2>
                         Total <Badge bg="secondary">{sommeTotale} €</Badge>
-                    </h1>
+                    </h2>
                 </div>
-                <div className="les-compteurs row mb-3">
+                <div className="les-compteurs row mb-3 ">
                     <div className="counter compteur-enfant mb-3 col-md-6">
                         <p className='nb-billet m-2'>Billet(s) enfant  </p>
-                        <button type='button' className="counter--minus" onClick={() => enfantDispatch({type: 'decrement'})}>–</button>
+                        <button 
+                            type='button' 
+                            className="counter--minus" 
+                            onClick={() => enfantDispatch({type: 'decrement'})}
+                        >–</button>
                         <div className="counter--count">
-                            <h1>{compteurEnfant}</h1>
+                            <h3>{compteurEnfant}</h3>
                         </div>
-                        <button type='button' className="counter--plus" onClick={() => enfantDispatch({type: 'increment'})}>+</button>
+                        <button 
+                            type='button' 
+                            className="counter--plus" 
+                            onClick={() => enfantDispatch({type: 'increment'})}
+                        >+</button>
                     </div>
                     <div className="counter compteur-adulte col-md-6">
                         <p className='nb-billet'>Billet(s) adulte </p>
-                        <button type='button' className="counter--minus" onClick={() => adulteDispatch({type: 'decrement'})}>–</button>
+                        <button 
+                            type='button' 
+                            className="counter--minus" 
+                            onClick={() => adulteDispatch({type: 'decrement'})}
+                        >–</button>
                         <div className="counter--count">
                             <h1>{compteurAdulte}</h1>
                         </div>
-                        <button type='button' className="counter--plus" onClick={() => adulteDispatch({type: 'increment'})}>+</button>
+                        <button 
+                            type='button' 
+                            className="counter--plus" 
+                            onClick={() => adulteDispatch({type: 'increment'})}
+                        >+</button>
                     </div>
                 </div>
-                 <div className="paramCommande row mb-3 col-md-6">
+                 <div className="paramCommande row mb-3 ">
                     <div className="counter col-md-6 p-2 mb-3">
                         <p className='lieu-retrait m-2 '>
-                            Récupérer à
+                            Retrait
                         </p>
                         <div className="div-select-lieu m-2">
-                            <BasicSelect />
+                        <Form.Select 
+                            value={lieuRetrait}
+                            onChange={(e) => setLieuRetrait(e.target.value)}
+                            >
+                            {options.map((option) => (
+                                    <option key={option.label} value={option.value}>{option.label}</option>
+                                ))
+                            }
+                        </Form.Select>
                         </div>
                     </div>
                     <div className="counter col-md-6  p-2">
@@ -124,12 +254,20 @@ function OrderProduit (){
                             type="date"
                             name="date-retrait"
                             placeholder="Due date"
-                            //value={date}
-                            //onChange={(e) => setDate(e.target.value)}
+                            value={dateRetrait}
+                            onChange={(e) => setDateRetrait(e.target.value)}
                         />
                         </div>
                     </div>
                     
+                </div>
+                <div className="justify-content-center d-flex">
+                <button 
+                    className="btn btn-lg btn-primary btn-login text-uppercase fw-bold mb-2" 
+                    type="submit"
+                    onClick={handleSubmit}
+                >Confirmer
+                </button>
                 </div>
             </div>
             

@@ -11,11 +11,15 @@ import OrderProduit from './Components/pages/OrderProduit';
   
 function App(){
 
-  const etatBascule = (localStorage.getItem('access_token') && localStorage.getItem('refresh_token')) && (localStorage.getItem('access_token') !== undefined && localStorage.getItem('refresh_token') !== undefined) ? true : false
+  const etatBascule = (localStorage.getItem('access_token') !== 'undefined') || (localStorage.getItem('refresh_token') !== 'undefined') ? false : true
   const [bascule, setBascule] = React.useState(etatBascule)
 
   function changementTxtConnexion () {setBascule(true)} 
   function changementTxtDeconnexion() {setBascule(false)}
+
+  React.useEffect(() => {
+    setBascule(etatBascule)
+  },[bascule])
 
   return(
     <React.StrictMode>

@@ -7,11 +7,13 @@ function CarteProduit(props){
     //Pour la navigation
     const navigate = useNavigate();
     const commandeProduit = () =>{
-        if(localStorage.getItem('access_token') && localStorage.getItem('access_token') != undefined){
-            navigate('/order-produit')
+        if((localStorage.getItem('access_token') === undefined) || (localStorage.getItem('refresh_token') === undefined)){
+            navigate('/connexion')
         }
         else{
-            navigate('/connexion')
+            // En 2ième param un objet transportant des données pour la page indiquée en param 1 et la récupération se fait à l'aide de useLocation.
+            navigate('/order-produit', {state:{nom: props.nom,
+                                         id: props.id}})
         }
     }          
 
