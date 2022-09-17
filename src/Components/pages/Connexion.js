@@ -88,7 +88,7 @@ function Connexion (props){
                             <div className="col-md-9 col-lg-8 mx-auto">
                                 <div className="icon-user d-flex align-items-center flex-column">
                                     <h2 className=''><FaUser /></h2>
-                                    <h3 className="login-heading mb-4"> Bienvenu-e !</h3>
+                                    <h3 className="login-heading mb-4">Connectez-vous pour continuer</h3>
                                 </div>
 
                             {/* <!-- Sign In Form --> */}
