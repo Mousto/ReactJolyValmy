@@ -2,36 +2,44 @@ import React, { useState } from 'react';
 import AxiosInstance from '../../AxiosInstance';
 import { useNavigate } from 'react-router-dom';
 import Message from './../Message'
-import { FaUser } from 'react-icons/fa';
+import { FaUser, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { useFormik } from "formik";
+import * as yup from "yup";
+import Form from 'react-bootstrap/Form';
+import InputGroup from 'react-bootstrap/InputGroup';
 
 
 
 function Connexion (props){
 
-    const initialFormData = Object.freeze({
-		email: '',
-		password: '',
-	});
-    const navigate = useNavigate();
-	const [formData, updateFormData] = useState(initialFormData);
-	const [isError, setIsError] = useState(false);
-	const [isServerError, setIsServerError] = useState(false);
+    const schema = yup.object().shape({
+        email: yup.string()
+            .email("email invalide")
+            .required("l'email est obligatoire"),
+        password: yup.string()
+        .min(8,'passe inconnu')
+            .required("mot de passe requis"),
+      });
+  
+    const {
+      handleSubmit,
+      handleChange,
+      handleBlur,
+      touched,
+      values, // use this if you want controlled components
+      errors,
+    } = useFormik({
+      initialValues: {
+          email: '',
+          password: '',
+        },
+      validationSchema: schema,
+      onSubmit: (values) => {
 
-	const handleChange = (e) => {
-		updateFormData({
-			...formData,
-			// On enlève les espaces vides
-			[e.target.name]: e.target.value.trim(),
-		});
-	};
-
-	const handleSubmit = (e) => {
-		e.preventDefault();
-
-		AxiosInstance
+        AxiosInstance
 			.post(`token/`, {
-				email: formData.email,
-				password: formData.password,
+				email: values.email,
+				password: values.password,
 			})
 			.then((res) => {
                 localStorage.setItem('access_token', res.data.access);
@@ -63,18 +71,22 @@ function Connexion (props){
                 }
                 console.log(error.config);
               });
-      /* .catch(error => {
-        // console.log(error)
-        if(error.request.status === 401){
-          setIserror(true)
-        }
-      }) */
-      
-	};
-  const styles = {
-    borderColor: isError ? 'red' : '', 
-    color: isError ? 'red' : '', 
-  }
+
+        console.log(JSON.stringify(values));
+      },
+    });
+
+    const navigate = useNavigate();
+	const [isError, setIsError] = useState(false);
+	const [isServerError, setIsServerError] = useState(false);
+    const[showPwd, setShowPwd]= useState(false);
+
+
+
+    const styles = {
+        borderColor: isError ? 'red' : '', 
+        color: isError ? 'red' : '', 
+    }
 
     return (
         <React.StrictMode>
@@ -82,78 +94,104 @@ function Connexion (props){
                 <div className="row g-0">
                     <div className="d-none d-md-flex col-md-4 col-lg-6 bg-image"></div>
                     <div className="col-md-8 col-lg-6">
-                    <div className="login d-flex align-items-center py-5">
-                        <div className="container">
-                        <div className="row">
-                            <div className="col-md-9 col-lg-8 mx-auto">
-                                <div className="icon-user d-flex align-items-center flex-column">
-                                    <h2 className=''><FaUser /></h2>
-                                    <h3 className="login-heading mb-4">Connectez-vous pour continuer</h3>
-                                </div>
+                        <div className="login d-flex align-items-center py-5">
+                            <div className="container">
+                                <div className="row">
+                                    <div className="col-md-9 col-lg-8 mx-auto">
+                                        <div className="icon-user d-flex align-items-center flex-column">
+                                            <h2 className=''><FaUser /></h2>
+                                            <h3 className="login-heading mb-4">Connectez-vous pour continuer</h3>
+                                        </div>
 
-                            {/* <!-- Sign In Form --> */}
-                            <form>
-                                {
-                                isError && 
-                                <div className="form-floating mb-3 div-erreur-connexion p-2" style={styles}>
-                                    Veuillez entrer l'email et le mot de passe correctes pour un compte personnel. Noter que les deux champs peuvent être sensibles à la casse.
-                                </div>
-                                }
-                                <div className="form-floating mb-3">
-                                    <input 
-                                        type="email"
-                                        name="email" 
-                                        className="form-control" 
-                                        id="floatingInput" 
-                                        placeholder="name@example.com"
-                                        onChange={handleChange}
-                                    />
-                                    <label htmlFor="floatingInput">Adresse mail</label>
-                                </div>
-                                <div className="form-floating mb-3">
-                                    <input
-                                        type="password" 
-                                        name="password"
-                                        className="form-control" 
-                                        id="floatingPassword" 
-                                        placeholder="Password"
-                                        onChange={handleChange}
-                                     />
-                                    <label htmlFor="floatingPassword">Mot de passe</label>
-                                </div>
-                                <div className="form-check mb-3">
-                                    <input 
-                                        className="form-check-input" 
-                                        type="checkbox" 
-                                        value="" 
-                                        id="rememberPasswordCheck"
-                                    />
-                                    <label className="form-check-label"             htmlFor="rememberPasswordCheck">
-                                        Remember password
-                                    </label>
-                                </div>
+                                        {/* <!-- Sign In Form --> */}
+                                        <Form onSubmit={handleSubmit}>
+                                            {
+                                            isError && 
+                                            <div className="form-floating mb-3 div-erreur-connexion p-2" style={styles}>
+                                                Veuillez entrer l'email et le mot de passe correctes pour un compte personnel. Noter que les deux champs peuvent être sensibles à la casse.
+                                            </div>
+                                            }
+                                            <div className="form-floating mb-3">
+                                                <Form.Group controlId="validationFormikUsername">
+                                                    <Form.Label>Email</Form.Label>
+                                                    <InputGroup hasValidation>
+                                                        <InputGroup.Text id="inputGroupPrepend">@</InputGroup.Text>
+                                                        <Form.Control
+                                                        type="text"
+                                                        placeholder="Votre email"
+                                                        aria-describedby="inputGroupPrepend"
+                                                        name="email"
+                                                        value={values.email}
+                                                        onChange={handleChange}
+                                                        onBlur={handleBlur}
+                                                        isInvalid={touched.email && errors.email}
+                                                        />
+                                                        {touched.email && errors.email ? 
+                                                            <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback> : 
+                                                            null
+                                                        }
+                                                    </InputGroup>
+                                                </Form.Group>
+                                            </div>
+                                            <div className="form-floating mb-3">
+                                                    <Form.Group controlId="validationFormikPassword">
+                                                    <Form.Label>Mot de passe</Form.Label>
+                                                    <InputGroup hasValidation>
+                                                        <Form.Control
+                                                            className='password'
+                                                            type={(showPwd) ? "text" : "password"}
+                                                            placeholder='Votre mot de passe'
+                                                            name="password"
+                                                            value={values.password}
+                                                            onChange={handleChange}
+                                                            onBlur={handleBlur}
+                                                            isInvalid={touched.password && errors.password}
+                                                        />
+                                                        <InputGroup.Text 
+                                                        id="inputGroupAppend"
+                                                        onClick={() => setShowPwd(!showPwd)}
+                                                        >
+                                                            { showPwd ? <FaEye /> : <FaEyeSlash />} 
+                                                        </InputGroup.Text>
+                                                    </InputGroup>
+                                                    {touched.password && errors.password ? 
+                                                        <Form.Control.Feedback type="invalid">{errors.password}</Form.Control.Feedback> : 
+                                                        null
+                                                    }
+                                                </Form.Group>
+                                            </div>
+                                            <div className="form-check mb-3">
+                                                <input 
+                                                    className="form-check-input" 
+                                                    type="checkbox" 
+                                                    value="" 
+                                                    id="rememberPasswordCheck"
+                                                />
+                                                <label className="form-check-label" htmlFor="rememberPasswordCheck">
+                                                    Remember password
+                                                </label>
+                                            </div>
 
-                                <div className="d-grid">
-                                    <button 
-                                        className="btn btn-lg btn-primary btn-login text-uppercase fw-bold mb-2" 
-                                        type="submit"
-                                        onClick={handleSubmit}
-                                    >Se connecter
-                                    </button>
-                                    <div className="text-center">
-                                        <a className="small" href="#">Mot de passe oublié?</a>
+                                            <div className="d-grid">
+                                                <button 
+                                                    className="btn btn-lg btn-primary btn-login text-uppercase fw-bold mb-2" 
+                                                    type="submit"
+                                                >Se connecter
+                                                </button>
+                                                <div className="text-center">
+                                                    <a className="small" href="#">Mot de passe oublié?</a>
+                                                </div>
+                                            </div>
+
+                                        </Form>
+                                        {
+                                            isServerError &&
+                                            <Message message="Désolé nous ne pouvons répondre à votre requête actuellement. Veuillez recommncer ultérieurement." variant="info" titre='Erreur serveur/réseaux'/>
+                                        }
                                     </div>
                                 </div>
-
-                            </form>
-                            {
-                                isServerError &&
-                                 <Message message="Désolé nous ne pouvons répondre à votre requête actuellement. Veuillez recommncer ultérieurement." variant="info" titre='Erreur serveur/réseaux'/>
-                            }
                             </div>
                         </div>
-                        </div>
-                    </div>
                     </div>
                 </div>
             </div>

@@ -18,10 +18,17 @@
     padding: 0.75rem 1rem;
   }
   
-    .div-erreur-connexion{
-        max-width: 100%;
-        color: red;
-        border: 1px solid red;
-        border-radius: 5px;
-    }
+  .div-erreur-connexion{
+      max-width: 100%;
+      color: red;
+      border: 1px solid red;
+      border-radius: 5px;
+  }
+  #inputGroupAppend:hover{
+    cursor: pointer;
+  }
+  .password, #inputGroupPrepend{
+    border-bottom-right-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+  }
     
