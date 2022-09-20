@@ -3,7 +3,7 @@ import Accueil from "./Components/pages/Accueil";
 import React from "react"
 import 'bootstrap/dist/css/bootstrap.min.css'
 import Barnav from './Components/Barnav';
-import Test from './Components/Test';
+//import Test from './Components/Test';
 import LesProduits from './Components/pages/LesProduits';
 import CreateUser from './Components/pages/CreateUser';
 import Connexion from './Components/pages/Connexion';

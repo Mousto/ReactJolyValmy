@@ -5,7 +5,11 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
-import InputGroup from 'react-bootstrap/InputGroup';
+import InputGroup from 'react-bootstrap/InputGroup'
+import 'react-phone-input-2/lib/style.css'
+import "yup-phone";
+
+
 
 const optionsCivilite = [
     {
@@ -51,29 +55,32 @@ const eluSyndicat = [
 ]
 
 function CreateUser() {
-    const schema = yup.object().shape({
-        civilite: yup.string().required('sélectionnez une option'),
-        prenom: yup.string().required('le prénom est requis'),
-        nom: yup.string().required('le nom est requis'),
-        email: yup.string()
-            .email("email invalide")
-            .required("l'email est obligatoire"),
-        telephone: yup.string().required('numéro requis'),
-        clinique: yup.string().required('clinique requise'),
-        service: yup.string().required('service requis'),
-        elu: yup.string().required('sélectionnez une option'),
-        password: yup.string()
-            .min(8,'minimum 8 caractères')
-            .required("mot de passe requis"),
-        confirm_password: yup.string()
-            .required('confirmation requise')
-            .oneOf(
-            [yup.ref('password'), null],
-             'confirmation non identique',
-            ),
-        terms: yup.bool().required('ce champs est obligatire').oneOf([true], 'Termes à acceptés'),
-      });
 
+  const schema = yup.object().shape({
+    civilite: yup.string().required('sélectionnez une option'),
+    prenom: yup.string().required('le prénom est requis'),
+    nom: yup.string().required('le nom est requis'),
+    email: yup.string()
+        .email("email invalide")
+        .required("l'email est obligatoire"),
+    telephone: yup.string().phone('FR', true, 'Téléphone invalide').required('numéro requis'),
+    clinique: yup.string().required('clinique requise'),
+    service: yup.string().required('service requis'),
+    elu: yup.string().required('sélectionnez une option'),
+    password: yup.string()
+        .min(8,'minimum 8 caractères')
+        .required("mot de passe requis"),
+    confirm_password: yup.string()
+        .required('confirmation requise')
+        .oneOf(
+        [yup.ref('password'), null],
+          'confirmation non identique',
+        ),
+    terms: yup.bool().required('ce champs est obligatire').oneOf([true], 'Termes à acceptés'),
+  });
+
+  
+  //console.log(schema.fields.telephone)
   const {
     handleSubmit,
     handleChange,
@@ -179,7 +186,7 @@ function CreateUser() {
                   type="text"
                   placeholder="Téléphone"
                   name="telephone"
-                  value={values.telephone}
+                  value={values.telephone.trim()}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   isInvalid={touched.telephone && errors.telephone}
@@ -215,7 +222,7 @@ function CreateUser() {
                   type="text"
                   placeholder="Service"
                   name="service"
-                  value={values.service}
+                  value={values.service.trim()}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   isInvalid={touched.service && errors.service}
@@ -226,7 +233,7 @@ function CreateUser() {
                   }
               </Form.Group>
               <Form.Group as={Col} md="3" controlId="validationFormikElu">
-                <Form.Label>Représentant syndical ?</Form.Label>
+                <Form.Label>êtes vous représentant syndical ?</Form.Label>
                 <Form.Select
                   type="text"
                   name="elu"
@@ -235,15 +242,15 @@ function CreateUser() {
                   onBlur={handleBlur}
                   isInvalid={touched.elu && errors.elu}
                 >
-                {eluSyndicat.map((option) => (
-                  <option key={option.label} value={option.value}>{option.label}</option>
+                  {eluSyndicat.map((option) => (
+                    <option key={option.label} value={option.value}>{option.label}</option>                 
                   ))
                   }
-                  </Form.Select>
-                  {touched.elu && errors.elu ? 
-                      <Form.Control.Feedback type="invalid">{errors.elu}</Form.Control.Feedback> : 
-                      null
-                  }
+                </Form.Select>
+                {touched.elu && errors.elu ? 
+                    <Form.Control.Feedback type="invalid">{errors.elu}</Form.Control.Feedback> : 
+                    null
+                }
               </Form.Group>
             </Row>
             <Row className="mb-3">
@@ -252,7 +259,7 @@ function CreateUser() {
                 <Form.Control
                     type="text"
                     name="password"
-                    value={values.password}
+                    value={values.password.trim()}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     isInvalid={touched.password && errors.password}
@@ -268,16 +275,15 @@ function CreateUser() {
                 <Form.Control
                     type="text"
                     name="confirm_password"
-                    value={values.confirm_password}
+                    value={values.confirm_password.trim()}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     isInvalid={touched.confirm_password && errors.confirm_password}
                 />
-                {/* <Form.Control.Feedback>Looks good!</Form.Control.Feedback> */}
-                    {touched.confirm_password && errors.confirm_password ? 
-                        <Form.Control.Feedback type="invalid">{errors.confirm_password}</Form.Control.Feedback> : 
-                        null
-                    }
+                {touched.confirm_password && errors.confirm_password ? 
+                    <Form.Control.Feedback type="invalid">{errors.confirm_password}</Form.Control.Feedback> : 
+                    null
+                }
             </Form.Group>
             </Row>
             <Form.Group className="mb-3">

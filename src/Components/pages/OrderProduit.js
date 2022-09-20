@@ -2,7 +2,7 @@ import React, {useEffect, useState, useRef, useReducer} from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AxiosInstance from '../../AxiosInstance';
 import Badge from 'react-bootstrap/Badge';
-import BasicSelect from '../BasicSelect';
+//import BasicSelect from '../BasicSelect';
 import Form from 'react-bootstrap/Form';
 
 function OrderProduit (){
