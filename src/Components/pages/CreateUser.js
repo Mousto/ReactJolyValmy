@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import Form from 'react-bootstrap/Form';
@@ -6,8 +6,10 @@ import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import InputGroup from 'react-bootstrap/InputGroup'
-import 'react-phone-input-2/lib/style.css'
 import "yup-phone";
+import AxiosInstance from '../../AxiosInstance';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 
 
@@ -25,20 +27,7 @@ const optionsCivilite = [
       value: 'Monsieur' 
     }
 ]
-const optionsClinique = [
-    {
-      label: 'Séléctionner une option',
-      value: 'sélection clinique' 
-    },
-    {
-      label: 'Clinique Talant',
-      value: 'Talant' 
-    },
-    {
-      label: 'SSR Valmy',
-      value: 'Valmy' 
-    }
-]
+
 const eluSyndicat = [
     {
       label: 'Séléctionner une option',
@@ -56,6 +45,10 @@ const eluSyndicat = [
 
 function CreateUser() {
 
+  const navigate = useNavigate();
+  const [cliniques, setCliniques] = React.useState([])
+  const [services, setServices] = React.useState([])
+  
   const schema = yup.object().shape({
     civilite: yup.string().required('sélectionnez une option'),
     prenom: yup.string().required('le prénom est requis'),
@@ -63,9 +56,9 @@ function CreateUser() {
     email: yup.string()
         .email("email invalide")
         .required("l'email est obligatoire"),
-    telephone: yup.string().phone('FR', true, 'Téléphone invalide').required('numéro requis'),
-    clinique: yup.string().required('clinique requise'),
-    service: yup.string().required('service requis'),
+    phone: yup.string().phone('FR', true, 'Téléphone invalide').required('numéro requis'),
+    la_clinique: yup.string().required('clinique requise'),
+    le_service: yup.string().required('service requis'),
     elu: yup.string().required('sélectionnez une option'),
     password: yup.string()
         .min(8,'minimum 8 caractères')
@@ -79,8 +72,6 @@ function CreateUser() {
     terms: yup.bool().required('ce champs est obligatire').oneOf([true], 'Termes à acceptés'),
   });
 
-  
-  //console.log(schema.fields.telephone)
   const {
     handleSubmit,
     handleChange,
@@ -94,19 +85,88 @@ function CreateUser() {
         prenom: '',
         nom: '',
         email: '',
-        telephone: '',
-        clinique: '',
-        service: '',
+        phone: '',
+        la_clinique: '',
+        le_service: '',
         elu: '',
         password: '',
         confirm_password: '',
       },
     validationSchema: schema,
     onSubmit: (values) => {
+
+      AxiosInstance
+			.post(`userCreate/`, {
+				civilite: values.civilite,
+				first_name: values.prenom,
+				user_name: values.nom,
+				email: values.email,
+				phone: values.phone,
+				la_clinique: parseInt(values.la_clinique),
+				le_service: parseInt(values.le_service),
+				password: values.password,
+			})
+			.then((res) => {
+        //navigate('/');//Vers accueil
+        navigate(-1);//Vers la page précédente
+        //props.handelClick()
+				console.log(res);
+			})
+      .catch(function (error) {
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          
+          //console.log(error.response.data);
+          //console.log(error.response.status);
+          //console.log(error.response.headers);
+        } else if (error.request) {
+          // The request was made but no response was received
+          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+          // http.ClientRequest in node.js
+          console.log(error.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          //console.log('Erreur', error.message);
+        }
+        //console.log(error.config);
+      });
       console.log(JSON.stringify(values));
     },
   });
 
+  useEffect(() => {
+    if(cliniques.length === 0){ 
+      axios.get(`http://127.0.0.1:8000/api/cliniques`)
+      .then(res => {
+        const ar = {
+          id: 0,
+          nom_clinique: 'Sélectionner une option',
+        }
+        res.data.unshift(ar)
+        setCliniques(res.data)
+      })
+      //console.log('déja fait')
+    }
+    if(values.la_clinique !== '' && values.la_clinique != 0){
+      axios.get(`http://127.0.0.1:8000/api/serviceParClinique-list/${values.la_clinique}`)
+      .then(res => {
+        const ar = {
+          id: 0,
+          nom_service: 'Sélectionner une option',
+        }
+        res.data.unshift(ar)
+        setServices(res.data)
+      })
+    }
+    else{
+      setServices([{
+        id: 0,
+        nom_service: 'Sélectionner au préalable une clinique',
+      }])
+    }
+  }, [values.la_clinique])
+  
   return (
     <Form noValidate onSubmit={handleSubmit}>
           <Row className="mb-3">
@@ -185,14 +245,14 @@ function CreateUser() {
                 <Form.Control
                   type="text"
                   placeholder="Téléphone"
-                  name="telephone"
-                  value={values.telephone.trim()}
+                  name="phone"
+                  value={values.phone.trim()}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  isInvalid={touched.telephone && errors.telephone}
+                  isInvalid={touched.phone && errors.phone}
                 />
-                {touched.telephone && errors.telephone ? 
-                      <Form.Control.Feedback type="invalid">{errors.telephone}</Form.Control.Feedback> : 
+                {touched.phone && errors.phone ? 
+                      <Form.Control.Feedback type="invalid">{errors.phone}</Form.Control.Feedback> : 
                       null
                   }
               </Form.Group>
@@ -200,37 +260,42 @@ function CreateUser() {
                 <Form.Label>Clinique</Form.Label>
                 <Form.Select
                   type="text"
-                  name="clinique"
-                  value={values.clinique}
+                  name="la_clinique"
+                  value={values.la_clinique}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  isInvalid={touched.clinique && errors.clinique}
+                  isInvalid={touched.la_clinique && errors.la_clinique}
                 >
-                {optionsClinique.map((option) => (
-                  <option key={option.label} value={option.value}>{option.label}</option>
+                {cliniques.map((option) => (
+                  <option key={option.id} value={option.id}>{option.nom_clinique}</option>
                   ))
                   }
-                  </Form.Select>
-                  {touched.clinique && errors.clinique ? 
-                      <Form.Control.Feedback type="invalid">{errors.clinique}</Form.Control.Feedback> : 
+                </Form.Select>
+                  {touched.la_clinique && errors.la_clinique ? 
+                      <Form.Control.Feedback type="invalid">{errors.la_clinique}</Form.Control.Feedback> : 
                       null
                   }
               </Form.Group>
               <Form.Group as={Col} md="3" controlId="validationFormikService">
                 <Form.Label>Service</Form.Label>
-                <Form.Control
+                <Form.Select
                   type="text"
                   placeholder="Service"
-                  name="service"
-                  value={values.service.trim()}
+                  name="le_service"
+                  value={values.le_service.trim()}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  isInvalid={touched.service && errors.service}
-                />
-                  {touched.service && errors.service ? 
-                      <Form.Control.Feedback type="invalid">{errors.service}</Form.Control.Feedback> : 
-                      null
+                  isInvalid={touched.le_service && errors.le_service}
+                >
+                  {services.map((option) => (
+                  <option key={option.id} value={option.id}>{option.nom_service}</option>
+                  ))
                   }
+                </Form.Select>
+                {touched.le_service && errors.le_service ? 
+                    <Form.Control.Feedback type="invalid">{errors.le_service}</Form.Control.Feedback> : 
+                    null
+                }
               </Form.Group>
               <Form.Group as={Col} md="3" controlId="validationFormikElu">
                 <Form.Label>êtes vous représentant syndical ?</Form.Label>

@@ -12,6 +12,11 @@ import InputGroup from 'react-bootstrap/InputGroup';
 
 function Connexion (props){
 
+    const navigate = useNavigate();
+	const [isError, setIsError] = useState(false);
+	const [isServerError, setIsServerError] = useState(false);
+    const[showPwd, setShowPwd]= useState(false);
+
     const schema = yup.object().shape({
         email: yup.string()
             .email("email invalide")
@@ -72,17 +77,11 @@ function Connexion (props){
                 console.log(error.config);
               });
 
-        console.log(JSON.stringify(values));
+        //console.log(JSON.stringify(values));
       },
     });
 
-    const navigate = useNavigate();
-	const [isError, setIsError] = useState(false);
-	const [isServerError, setIsServerError] = useState(false);
-    const[showPwd, setShowPwd]= useState(false);
-
-
-
+    
     const styles = {
         borderColor: isError ? 'red' : '', 
         color: isError ? 'red' : '', 
@@ -138,6 +137,7 @@ function Connexion (props){
                                                     <Form.Label>Mot de passe</Form.Label>
                                                     <InputGroup hasValidation>
                                                         <Form.Control
+                                                            autoComplete="mot-de-passe"
                                                             className='password'
                                                             type={(showPwd) ? "text" : "password"}
                                                             placeholder='Votre mot de passe'
