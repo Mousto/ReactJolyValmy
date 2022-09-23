@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef} from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import Form from 'react-bootstrap/Form';
@@ -48,6 +48,8 @@ function CreateUser() {
   const navigate = useNavigate();
   const [cliniques, setCliniques] = React.useState([])
   const [services, setServices] = React.useState([])
+  const servicesTalant = useRef('')
+  const servicesValmy = useRef('')
   
   const schema = yup.object().shape({
     civilite: yup.string().required('sélectionnez une option'),
@@ -72,6 +74,8 @@ function CreateUser() {
     terms: yup.bool().required('ce champs est obligatire').oneOf([true], 'Termes à acceptés'),
   });
 
+  
+  //console.log(schema.fields.telephone)
   const {
     handleSubmit,
     handleChange,
@@ -135,6 +139,8 @@ function CreateUser() {
     },
   });
 
+  //const [selectedClinique, setSelectedClinique] = React.useState(values.la_clinique)
+  
   useEffect(() => {
     if(cliniques.length === 0){ 
       axios.get(`http://127.0.0.1:8000/api/cliniques`)
@@ -143,21 +149,38 @@ function CreateUser() {
           id: 0,
           nom_clinique: 'Sélectionner une option',
         }
+        // Services correspondant à la première clinique 
+        axios.get(`http://127.0.0.1:8000/api/serviceParClinique-list/${res.data[0]['id']}`)
+        .then(resultTalant => {
+          let arT = {
+            id: 0,
+            nom_service: 'Sélectionner un service',
+          }
+          resultTalant.data.unshift(arT)
+          servicesTalant.current = resultTalant.data
+        })
+        // Services correspondant à la deuxième clinique
+        axios.get(`http://127.0.0.1:8000/api/serviceParClinique-list/${res.data[1]['id']}`)
+        .then(resultValmy => {
+          let arV = {
+            id: 0,
+            nom_service: 'Sélectionner un service',
+          }
+          resultValmy.data.unshift(arV)
+          servicesValmy.current = resultValmy.data
+        })
+        //Chargement des cliniques
         res.data.unshift(ar)
         setCliniques(res.data)
       })
-      //console.log('déja fait')
+      
     }
     if(values.la_clinique !== '' && values.la_clinique != 0){
-      axios.get(`http://127.0.0.1:8000/api/serviceParClinique-list/${values.la_clinique}`)
-      .then(res => {
-        const ar = {
-          id: 0,
-          nom_service: 'Sélectionner une option',
-        }
-        res.data.unshift(ar)
-        setServices(res.data)
-      })
+      if(values.la_clinique == 1){ // Si clinique 1 sélectionnée, service correspondants
+        setServices(servicesTalant.current)
+      }else{ // Si clinique 2 sélectionnée, service correspondants
+        setServices(servicesValmy.current)
+      }
     }
     else{
       setServices([{
