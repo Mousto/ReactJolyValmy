@@ -109,6 +109,7 @@ function CreateUser() {
 				la_clinique: parseInt(values.la_clinique),
 				le_service: parseInt(values.le_service),
 				password: values.password,
+        elu: values.elu === 'Oui' && true,
 			})
 			.then((res) => {
         //navigate('/');//Vers accueil
@@ -147,7 +148,7 @@ function CreateUser() {
       .then(res => {
         const ar = {
           id: 0,
-          nom_clinique: 'Sélectionner une option',
+          nom_clinique: 'Sélectionner une clinique',
         }
         // Services correspondant à la première clinique 
         axios.get(`http://127.0.0.1:8000/api/serviceParClinique-list/${res.data[0]['id']}`)

@@ -7,7 +7,7 @@ function CarteProduit(props){
     //Pour la navigation
     const navigate = useNavigate();
     const commandeProduit = () =>{
-        if((localStorage.getItem('access_token') === undefined) || (localStorage.getItem('refresh_token') === undefined)){
+        if((localStorage.getItem('access_token') === undefined) || (localStorage.getItem('refresh_token') === undefined) || !localStorage.getItem('access_token') || !localStorage.getItem('refresh_token')){
             navigate('/connexion')
         }
         else{
