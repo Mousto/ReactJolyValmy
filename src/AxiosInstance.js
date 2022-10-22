@@ -20,12 +20,12 @@ AxiosInstance.interceptors.response.use(
 	},
 	async function (error) {
 		const originalRequest = error.config;
-
+		//console.log(error.config)
 		if (typeof error.response === 'undefined') {
 			alert(
 				'A server/network error occurred. ' +
-					'Looks like CORS might be the problem. ' +
-					'Sorry about this - we will get it fixed shortly.'
+					'Il semble que CORS peut être le problème. ' +
+					'Désolé pour ça - Nous allons le résoudre rapidement.'
 			);
 			return Promise.reject(error);
 		}
@@ -37,6 +37,15 @@ AxiosInstance.interceptors.response.use(
 			window.location.href = '/connexion';
 			return Promise.reject(error);
 		}
+		if(error.response.status === 401 &&
+			error.response.statusText === 'Unauthorized'){
+			alert("Il semble qu'il ya un problème. Veuillez tout d'abord vider le cache de votre navigateur ensuite, si nécessaire vous connecté.")
+		}
+		if(error.response.status === 400){
+			if(String(error.response.data['email']) === 'utilisateur with this adresse mail already exists.'){
+				alert('Un utilisateur avec cette adresse mail existe déjà.')
+			}
+		}
 
 		if (
 			error.response.data.code === 'token_not_valid' &&
@@ -44,8 +53,9 @@ AxiosInstance.interceptors.response.use(
 			error.response.statusText === 'Unauthorized'
 		) {
 			const refreshToken = localStorage.getItem('refresh_token');
-
+			
 			if (refreshToken) {
+				console.log(refreshToken)
 				const tokenParts = JSON.parse(atob(refreshToken.split('.')[1]));
 
 				// exp date in token is expressed in seconds, while now() returns milliseconds:

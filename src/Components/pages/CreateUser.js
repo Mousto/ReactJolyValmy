@@ -1,21 +1,41 @@
-import React, { useEffect, useRef} from "react";
+import React, { useEffect, useRef, useReducer, useState} from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
-import InputGroup from 'react-bootstrap/InputGroup'
+import InputGroup from 'react-bootstrap/InputGroup';
 import "yup-phone";
 import AxiosInstance from '../../AxiosInstance';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import ModalCreerElu from '../ModalCreerElu';
+//import ConfettiExplosion from 'react-confetti-explosion';
 
 
+const optionSyndicat = [
+  {
+    label: 'Sélectionner une option',
+    value: 'sélection syndicat' 
+  },
+  {
+    label: 'SUD',
+    value: 'SUD' 
+  },
+  {
+    label: 'CFDT',
+    value: 'CFDT' 
+  },
+  {
+    label: 'CGT',
+    value: 'CGT' 
+  }
+]
 
 const optionsCivilite = [
     {
-      label: 'Séléctionner une option',
+      label: 'Sélectionner une option',
       value: 'sélection civilité' 
     },
     {
@@ -30,7 +50,7 @@ const optionsCivilite = [
 
 const eluSyndicat = [
     {
-      label: 'Séléctionner une option',
+      label: 'Sélectionner une option',
       value: 'sélection statutElu' 
     },
     {
@@ -42,14 +62,50 @@ const eluSyndicat = [
       value: 'Non' 
     }
 ]
+const optionFonction = [
+    {
+      label: 'Sélectionner une option',
+      value: 'sélection fonction' 
+    },
+    {
+      label: 'Secrétaire CSE',
+      value: 'secrétaire CSE' 
+    },
+    {
+      label: 'Délégué syndical',
+      value: 'délégué syndical' 
+    },
+    {
+      label: 'Autre',
+      value: 'autre' 
+    }
+]
 
 function CreateUser() {
-
+  
   const navigate = useNavigate();
-  const [cliniques, setCliniques] = React.useState([])
-  const [services, setServices] = React.useState([])
+  const [cliniques, setCliniques] = useState([])
+  const [services, setServices] = useState([])
+  const [modalValide, setModalValide] = useState(false)
+  //const [isExploding, setIsExploding] = useState(false);
   const servicesTalant = useRef('')
   const servicesValmy = useRef('')
+  const compteur = useRef(0)
+  const [isElu, eluDispatch] = useReducer(eluReducer, false)
+
+  function eluReducer(state, action){
+    switch(action.type){
+        case 'Oui':
+          state = true
+          return state
+            
+        case 'Non':
+          state = false
+          return  state
+        default:
+          throw new Error('hors des clous !')
+    }
+}
   
   const schema = yup.object().shape({
     civilite: yup.string().required('sélectionnez une option'),
@@ -62,6 +118,11 @@ function CreateUser() {
     la_clinique: yup.string().required('clinique requise'),
     le_service: yup.string().required('service requis'),
     elu: yup.string().required('sélectionnez une option'),
+    /* syndicat: yup.string().required('sélectionnez une option'),
+    fonction: yup.string().required('fonction requise'),
+    message: yup.string().required('fonction requise'),
+    photo: yup.string(),
+    dispo: yup.bool(), */
     password: yup.string()
         .min(8,'minimum 8 caractères')
         .required("mot de passe requis"),
@@ -71,78 +132,87 @@ function CreateUser() {
         [yup.ref('password'), null],
           'confirmation non identique',
         ),
-    terms: yup.bool().required('ce champs est obligatire').oneOf([true], 'Termes à acceptés'),
+    /* terms: yup.bool().required('ce champs est obligatire').oneOf([true], 'Termes à acceptés'), */
   });
 
-  
   //console.log(schema.fields.telephone)
   const {
     handleSubmit,
     handleChange,
     handleBlur,
     touched,
-    values, // use this if you want controlled components
+    values, // à utiliser si on veut des controlled components
     errors,
   } = useFormik({
     initialValues: {
-        civilite: '',
-        prenom: '',
-        nom: '',
-        email: '',
-        phone: '',
-        la_clinique: '',
-        le_service: '',
-        elu: '',
-        password: '',
-        confirm_password: '',
-      },
+      civilite: '',
+      prenom: '',
+      nom: '',
+      email: '',
+      phone: '',
+      la_clinique: '',
+      le_service: '',
+      elu: '',
+      syndicat: optionSyndicat[0].value,
+      fonction: optionFonction[0].value,
+      message: 'Bonjour',
+      photo: 'No pic',
+      dispo: true,
+      password: '',
+      confirm_password: '',
+    },
     validationSchema: schema,
     onSubmit: (values) => {
-
+      console.log('je soumet le formulaire')
+      let personnel = '',
+            personnelElu = '';
+      if(values.elu !== 'Oui'){
+        personnel = {
+          civilite: values.civilite,
+          first_name: values.prenom,
+          user_name: values.nom,
+          email: values.email,
+          phone: values.phone,
+          la_clinique: parseInt(values.la_clinique),
+          le_service: parseInt(values.le_service),
+          password: values.password,
+          elu: false,
+        }
+      }else{
+        personnelElu = {
+          civilite: values.civilite,
+          first_name: values.prenom,
+          user_name: values.nom,
+          email: values.email,
+          phone: values.phone,
+          la_clinique: parseInt(values.la_clinique),
+          le_service: parseInt(values.le_service),
+          syndicat: values.syndicat,
+          photo: values.photo === 'No pic' ? null : values.photo,
+          fonction: values.fonction,
+          message_aux_collègues: values.message,
+          disponible: values.dispo,
+          password: values.password,
+          elu: true,
+        }
+        console.log(personnelElu.photo)
+      }
       AxiosInstance
-			.post(`userCreate/`, {
-				civilite: values.civilite,
-				first_name: values.prenom,
-				user_name: values.nom,
-				email: values.email,
-				phone: values.phone,
-				la_clinique: parseInt(values.la_clinique),
-				le_service: parseInt(values.le_service),
-				password: values.password,
-        elu: values.elu === 'Oui' && true,
-			})
+			.post(`userCreate/`, personnel !=='' ? personnel : personnelElu)
 			.then((res) => {
         //navigate('/');//Vers accueil
-        navigate(-1);//Vers la page précédente
-        //props.handelClick()
+        //navigate(-1);//Vers la page précédente
+        //navigate('../succes-new-user')
+        //setIsExploding(true)
 				console.log(res);
 			})
-      .catch(function (error) {
-        if (error.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
-          
-          //console.log(error.response.data);
-          //console.log(error.response.status);
-          //console.log(error.response.headers);
-        } else if (error.request) {
-          // The request was made but no response was received
-          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-          // http.ClientRequest in node.js
-          console.log(error.request);
-        } else {
-          // Something happened in setting up the request that triggered an Error
-          //console.log('Erreur', error.message);
-        }
-        //console.log(error.config);
-      });
+      navigate('../succes-new-user')
       console.log(JSON.stringify(values));
     },
   });
-
-  //const [selectedClinique, setSelectedClinique] = React.useState(values.la_clinique)
   
   useEffect(() => {
+    
     if(cliniques.length === 0){ 
       axios.get(`http://127.0.0.1:8000/api/cliniques`)
       .then(res => {
@@ -176,8 +246,8 @@ function CreateUser() {
       })
       
     }
-    if(values.la_clinique !== '' && values.la_clinique != 0){
-      if(values.la_clinique == 1){ // Si clinique 1 sélectionnée, service correspondants
+    if(values.la_clinique !== '' && values.la_clinique !== '0'){
+      if(values.la_clinique === '1'){ // Si clinique 1 sélectionnée, service correspondants
         setServices(servicesTalant.current)
       }else{ // Si clinique 2 sélectionnée, service correspondants
         setServices(servicesValmy.current)
@@ -189,12 +259,57 @@ function CreateUser() {
         nom_service: 'Sélectionner au préalable une clinique',
       }])
     }
-  }, [values.la_clinique])
-  
+
+    if(values.elu !== ''){
+      if(values.elu === 'Oui'){
+        if(compteur.current === 0){
+          eluDispatch({type: 'Oui'})
+        }
+      }else{
+        eluDispatch({type: 'Non'})
+        compteur.current = 0
+      }
+    }
+    //console.log(values.message)
+  }, [values.la_clinique, values.elu, isElu, cliniques.length, values.syndicat, values.fonction])
+ 
+  function fermeModal(e){
+    eluDispatch({type: 'Non'})
+    compteur.current = 1
+    if(e.target.value === 'Ennuler modal'){
+      values.message = ''
+      values.syndicat = optionSyndicat[0].value
+      values.fonction = optionFonction[0].value
+      values.elu = eluSyndicat[2].value
+    }else{
+      setModalValide(true)
+    }
+  }
+
   return (
-    <Form noValidate onSubmit={handleSubmit}>
-          <Row className="mb-3">
-            <Form.Group as={Col} md="3" controlId="validationFormikcivilite">
+    <div className="conteneur-form mx-auto mt-5">
+      <div className="conteneur-form2 d-flex flex-column mx-auto shadow-lg">
+        <h1 className="mx-auto">Création de compte</h1>
+        {/* {isExploding && <ConfettiExplosion />} */}
+        <Form noValidate onSubmit={handleSubmit}>
+          <div className="modalElu">
+            <ModalCreerElu 
+              visible={isElu}
+              handleHide={(e) => fermeModal(e)}
+              syndicat= {optionSyndicat} 
+              fonction= {optionFonction} 
+              syndicatValue={values.syndicat}
+              syndicatFonction={values.fonction}
+              syndicatMessage={values.message}
+              touched={touched}
+              errors={errors}
+              handleChange={handleChange}
+              handleBlur={handleBlur}
+            />
+          </div>
+          
+          <Row>
+            <Form.Group as={Col} md="6" className="mb-2" controlId="validationFormikcivilite">
               <Form.Label>Civilité</Form.Label>
               <Form.Select
                 type="text"
@@ -211,7 +326,7 @@ function CreateUser() {
                 </Form.Select>
               {touched.civilite && errors.civilite ? <Form.Control.Feedback type="invalid">{errors.civilite}</Form.Control.Feedback> : null}
             </Form.Group>
-            <Form.Group as={Col} md="3" controlId="validationFormikPrenom">
+            <Form.Group as={Col} md="6" className="mb-2" controlId="validationFormikPrenom">
               <Form.Label>Prénom</Form.Label>
               <Form.Control
                 type="text"
@@ -227,7 +342,7 @@ function CreateUser() {
                     null
                 }
             </Form.Group>
-            <Form.Group as={Col} md="3" controlId="validationFormikNom">
+            <Form.Group as={Col} md="6" className="mb-2" controlId="validationFormikNom">
               <Form.Label>Nom</Form.Label>
               <Form.Control
                 type="text"
@@ -242,7 +357,7 @@ function CreateUser() {
                     null
                 }
             </Form.Group>
-            <Form.Group as={Col} md="3" controlId="validationFormikEmail">
+            <Form.Group as={Col} md="6" className="mb-2" controlId="validationFormikEmail">
               <Form.Label>Email</Form.Label>
               <InputGroup hasValidation>
                 <InputGroup.Text id="inputGroupPrepend">@</InputGroup.Text>
@@ -262,9 +377,9 @@ function CreateUser() {
                 }
               </InputGroup>
             </Form.Group>
-            </Row>
-            <Row className="mb-3">
-              <Form.Group as={Col} md="3" controlId="validationFormikTelephone">
+          </Row>
+          <Row>
+              <Form.Group as={Col} md="6" className="mb-2" controlId="validationFormikTelephone">
                 <Form.Label>Téléphone</Form.Label>
                 <Form.Control
                   type="text"
@@ -280,7 +395,7 @@ function CreateUser() {
                       null
                   }
               </Form.Group>
-              <Form.Group as={Col} md="3" controlId="validationFormikClinique">
+              <Form.Group as={Col} md="6" className="mb-2" controlId="validationFormikClinique">
                 <Form.Label>Clinique</Form.Label>
                 <Form.Select
                   type="text"
@@ -300,7 +415,7 @@ function CreateUser() {
                       null
                   }
               </Form.Group>
-              <Form.Group as={Col} md="3" controlId="validationFormikService">
+              <Form.Group as={Col} md="6" className="mb-2" controlId="validationFormikService">
                 <Form.Label>Service</Form.Label>
                 <Form.Select
                   type="text"
@@ -316,20 +431,22 @@ function CreateUser() {
                   ))
                   }
                 </Form.Select>
-                {touched.le_service && errors.le_service ? 
+                {touched.le_service && errors.le_service? 
                     <Form.Control.Feedback type="invalid">{errors.le_service}</Form.Control.Feedback> : 
                     null
                 }
               </Form.Group>
-              <Form.Group as={Col} md="3" controlId="validationFormikElu">
+              <Form.Group as={Col} md="6" className="mb-2" controlId="validationFormikElu">
                 <Form.Label>êtes vous représentant syndical ?</Form.Label>
                 <Form.Select
+                  id='elu'
                   type="text"
                   name="elu"
                   value={values.elu}
+                  disabled={modalValide}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  isInvalid={touched.elu && errors.elu}
+                  isInvalid={touched.elu&& errors.elu}
                 >
                   {eluSyndicat.map((option) => (
                     <option key={option.label} value={option.value}>{option.label}</option>                 
@@ -342,8 +459,8 @@ function CreateUser() {
                 }
               </Form.Group>
             </Row>
-            <Row className="mb-3">
-            <Form.Group as={Col} md="2" controlId="validationFormikpassword">
+            <Row>
+            <Form.Group as={Col} md="6" className="mb-2" controlId="validationFormikpassword">
                 <Form.Label>Mot de passe</Form.Label>
                 <Form.Control
                     type="text"
@@ -359,7 +476,7 @@ function CreateUser() {
                         null
                     }
             </Form.Group>
-            <Form.Group as={Col} md="2" controlId="validationFormikconfirm_p">
+            <Form.Group as={Col} md="6" className="mb-2" controlId="validationFormikconfirm_p">
                 <Form.Label>Confirmer mot de passe</Form.Label>
                 <Form.Control
                     type="text"
@@ -370,12 +487,11 @@ function CreateUser() {
                     isInvalid={touched.confirm_password && errors.confirm_password}
                 />
                 {touched.confirm_password && errors.confirm_password ? 
-                    <Form.Control.Feedback type="invalid">{errors.confirm_password}</Form.Control.Feedback> : 
-                    null
+                    <Form.Control.Feedback type="invalid">{errors.confirm_password}</Form.Control.Feedback> : null
                 }
             </Form.Group>
             </Row>
-            <Form.Group className="mb-3">
+            {/* <Form.Group className="mb-3">
                 <Form.Check
                 required
                 name="terms"
@@ -387,9 +503,15 @@ function CreateUser() {
                 feedbackType="invalid"
                 id="validationFormikTermsEtConditions"
                 />
-            </Form.Group>
-            <Button type="submit">Créer le compte</Button>
-        </Form>    
+            </Form.Group> */}
+          <Row >
+            <div as={Col} className="d-flex justify-content-center">
+              <Button className="m-2" size="lg" type="submit">Créer le compte</Button>
+            </div>
+          </Row>  
+        </Form> 
+      </div> 
+    </div>  
   );
 }
 

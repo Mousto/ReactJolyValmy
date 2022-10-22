@@ -9,6 +9,7 @@ import CreateUser from './Components/pages/CreateUser';
 import Connexion from './Components/pages/Connexion';
 import Logout from './Components/pages/Logout';
 import OrderProduit from './Components/pages/OrderProduit';
+import SuccesNewUser from './Components/SuccesNewUser';
   
 function App(){
 
@@ -34,6 +35,7 @@ function App(){
           <Route path='/logout' element={ <Logout handelClick={changementTxtDeconnexion}/>}></Route>
           <Route path='/sign-up' element={ <CreateUser />}></Route>
           <Route path='/order-produit' element={ <OrderProduit />}></Route>
+          <Route path='/succes-new-user' element={ <SuccesNewUser />}></Route>
         </Routes>
       </BrowserRouter>
     </React.StrictMode>

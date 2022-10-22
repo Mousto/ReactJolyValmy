@@ -1,0 +1,16 @@
+.div-welcome{
+    background-image: url("../../../src/welcome2.jpeg");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    background-attachment: fixed;
+    height: 600px;
+    overflow: hidden;
+    position: relative;
+
+    button{
+        position: absolute;
+        bottom:0;
+        right:0;
+    }
+}

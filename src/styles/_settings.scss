@@ -4,6 +4,10 @@
     padding: 0;
     font-family: 'PT Sans', sans-serif;
 }
+html, body {
+    margin: 0;
+    height: 100%;
+}
 //concerne le réglage global de l'icone du composant Message
 .div-icon-message{
     width:25px;height:25px;
