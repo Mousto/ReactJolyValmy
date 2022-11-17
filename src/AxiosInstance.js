@@ -20,7 +20,7 @@ AxiosInstance.interceptors.response.use(
 	},
 	async function (error) {
 		const originalRequest = error.config;
-		//console.log(error.config)
+		//console.log(originalRequest)
 		if (typeof error.response === 'undefined') {
 			alert(
 				'A server/network error occurred. ' +
@@ -37,10 +37,10 @@ AxiosInstance.interceptors.response.use(
 			window.location.href = '/connexion';
 			return Promise.reject(error);
 		}
-		if(error.response.status === 401 &&
+		/* if(error.response.status === 401 &&
 			error.response.statusText === 'Unauthorized'){
-			alert("Il semble qu'il ya un problème. Veuillez tout d'abord vider le cache de votre navigateur ensuite, si nécessaire vous connecté.")
-		}
+			alert("Il semble qu'il ya un problème. Veuillez tout d'abord vous connecté.")
+		} */
 		if(error.response.status === 400){
 			if(String(error.response.data['email']) === 'utilisateur with this adresse mail already exists.'){
 				alert('Un utilisateur avec cette adresse mail existe déjà.')

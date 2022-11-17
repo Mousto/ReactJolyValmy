@@ -40,8 +40,53 @@ function Connexion (props){
         },
       validationSchema: schema,
       onSubmit: (values) => {
+        async function getConnected(){
+            try{
+                const res = await AxiosInstance
+                .post(`token/`, {
+                    email: values.email,
+                    password: values.password,
+                });
+                localStorage.setItem('access_token', res.data.access);
+				localStorage.setItem('refresh_token', res.data.refresh);
+				AxiosInstance.defaults.headers['Authorization'] =
+					'JWT ' + localStorage.getItem('access_token');
+                //navigate('/');//Vers accueil
+                navigate(-1);//Vers la page précédente
+                props.handelClick()
+                setIsError(false)
+				console.log(res);
+            }
+            catch(error){
+                if (error.response) {
+                    // The request was made and the server responded with a status code
+                    // that falls out of the range of 2xx
+                    setIsError(true)
+                    /* if(error.response.status === 401 &&
+                        error.response.statusText === 'Unauthorized'){
+                        alert("Veuillez tout d'abord vous connecté. L'identifiant et le mot de passe sont sensibles à la casse.")
+                    } */
+                    console.log(error.response.status);
+                    console.log(error.response.statusText);
+                    /* console.log(error.response.data);
+                    console.log(error.response.status);
+                    console.log(error.response.headers); */
+                  } else if (error.request) {
+                    // The request was made but no response was received
+                    // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                    // http.ClientRequest in node.js
+                    console.log(error.request);
+                  } else {
+                    // Something happened in setting up the request that triggered an Error
+                    setIsServerError(true)
+                    //console.log('Erreur', error.message);
+                  }
+                  console.log(error.config);
 
-        AxiosInstance
+            }
+        }
+        getConnected();
+        /* AxiosInstance
 			.post(`token/`, {
 				email: values.email,
 				password: values.password,
@@ -75,7 +120,7 @@ function Connexion (props){
                   //console.log('Erreur', error.message);
                 }
                 console.log(error.config);
-              });
+              }); */
 
         //console.log(JSON.stringify(values));
       },

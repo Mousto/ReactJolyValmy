@@ -33,7 +33,7 @@ function OrderProduit (){
     const [dateRetrait, setDateRetrait] = useState('')
     const navigate = useNavigate();
     const location = useLocation()
-
+    console.log(location.state)
     const [produit, setProduit] = useState([])
     const [compteurEnfant, enfantDispatch] = useReducer(enfantReducer, 0)
     const [compteurAdulte, adulteDispatch] = useReducer(adulteReducer, 0)
@@ -82,7 +82,7 @@ function OrderProduit (){
             if(prix_billet_adulte.current === 0){
                 
                 AxiosInstance
-                    .get(`produits/${location.state.nom}`)//location.state.nom : lancer par la page précédente en param 2 de useNavigate
+                    .get(`produits/${location.state.nom}`)//location.state.nom : lancer par la page précédente(CarteProduit.js) en param 2 de useNavigate
                     .then((res) => {
                         setProduit(res.data)
                         prix_billet_adulte.current = res.data.prix_adulte

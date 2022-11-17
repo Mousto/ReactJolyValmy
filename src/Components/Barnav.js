@@ -31,7 +31,7 @@ function Barnav(props) {
         <Nav className="me-auto">
             <NavDropdown title="Mon compte" id="collasible-nav-dropdown_1">
               <NavDropdown.Item href="sign-up">S'inscrire</NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.2">
+              <NavDropdown.Item href="mes-commandes">
                 Mes commandes
               </NavDropdown.Item>
               

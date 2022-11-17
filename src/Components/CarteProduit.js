@@ -4,6 +4,7 @@ import Card from 'react-bootstrap/Card';
 import { useNavigate } from 'react-router-dom';
 
 function CarteProduit(props){
+    //console.log(props);
     //Pour la navigation
     const navigate = useNavigate();
     const commandeProduit = () =>{
@@ -12,8 +13,9 @@ function CarteProduit(props){
         }
         else{
             // En 2ième param un objet transportant des données pour la page indiquée en param 1 et la récupération se fait à l'aide de useLocation.
-            navigate('/order-produit', {state:{nom: props.nom,
-                                         id: props.id}})
+            /* navigate('/order-produit', {state:{nom: props.nom,
+                                         id: props.id}}) */
+            navigate('/order-produit', {state:props})
         }
     }          
 
@@ -23,7 +25,7 @@ function CarteProduit(props){
                 <div className="produit-dispo">
                     {props.disponible === false && <div className="card--badge">Bientôt disponible</div>}
                 </div>
-                <Card.Img variant="top" src={props.photo} />
+                <Card.Img src={props.photo} />
                 <Card.Body>
                     <Card.Title>{props.nom}</Card.Title>
                     <Card.Text>

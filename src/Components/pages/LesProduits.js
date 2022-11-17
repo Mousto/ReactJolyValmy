@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react"
 import CarteProduit from "../CarteProduit";
 import axios from 'axios';
-
 import PostLoadingComponent from "../ProduitLoading";
 
 function LesProduits(){
@@ -16,7 +15,7 @@ function LesProduits(){
     setAppState({ loading: true });
 
     axios.get(`http://127.0.0.1:8000/api/produits`)
-      .then(res => setAppState({ loading: false, produits: res.data}))
+      .then(res => {setAppState({ loading: false, produits: res.data})})
       
     },[setAppState])
     

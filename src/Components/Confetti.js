@@ -20,7 +20,8 @@ function Confetti(){
             <ReactConfetti
                 width={windowDimension.width}
                 height={windowDimension.height}
-                tweenDuration={10}
+                tweenDuration={1000}
+                numberOfPieces={200}
             />
         </div>
     )
