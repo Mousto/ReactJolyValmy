@@ -9,6 +9,7 @@ import CreateUser from './Components/pages/CreateUser';
 import Connexion from './Components/pages/Connexion';
 import Logout from './Components/pages/Logout';
 import MesCommandes from './Components/pages/MesCommandes';
+import ModifCommande from './Components/pages/ModifCommande';
 import OrderProduit from './Components/pages/OrderProduit';
 import SuccesNewUser from './Components/SuccesNewUser';
   
@@ -38,6 +39,7 @@ function App(){
           <Route path='/order-produit' element={ <OrderProduit />}></Route>
           <Route path='/succes-new-user' element={ <SuccesNewUser />}></Route>
           <Route path='/mes-commandes' element={ <MesCommandes />}></Route>
+          <Route path='/modification-commande' element={ <ModifCommande />}></Route>
         </Routes>
       </BrowserRouter>
     </React.StrictMode>

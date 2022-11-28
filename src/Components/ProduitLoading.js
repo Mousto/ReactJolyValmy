@@ -3,8 +3,8 @@ import React from 'react'
 function PostLoading(Produit) {
     return function PostLoadingComponent({ isLoading, props}) {
         //console.log(props);
-        if(!isLoading && (props != null || props != undefined)){ 
-            return props.results.map(produit => (
+        if(!isLoading && (props != null && props != undefined)){ 
+            return props.map(produit => (
             <Produit key={produit.id} {...produit} />)
             )
         }

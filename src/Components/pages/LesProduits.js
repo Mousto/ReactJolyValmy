@@ -17,7 +17,8 @@ function LesProduits(){
     axios.get(`http://127.0.0.1:8000/api/produits`)
       .then(res => {setAppState({ loading: false, produits: res.data})})
       
-    },[setAppState])
+  },[setAppState])
+  //console.log(appState.produits);
     
     return(
       <main>

@@ -4,9 +4,7 @@ import './../styles/components/_bouton.scss'
 
 function Bouton(props){
     return (
-        <Link to={props.to} >
-            <button className="btn">{props.designation}</button>
-        </Link>
+        <button className="btn">{props.action}</button>
     )
 }
 export default Bouton

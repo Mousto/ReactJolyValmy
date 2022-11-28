@@ -33,7 +33,7 @@ function OrderProduit (){
     const [dateRetrait, setDateRetrait] = useState('')
     const navigate = useNavigate();
     const location = useLocation()
-    console.log(location.state)
+    //console.log(location.state)
     const [produit, setProduit] = useState([])
     const [compteurEnfant, enfantDispatch] = useReducer(enfantReducer, 0)
     const [compteurAdulte, adulteDispatch] = useReducer(adulteReducer, 0)
@@ -113,7 +113,7 @@ function OrderProduit (){
         // Ternaire
         st.toString().includes('.') ? setSommeTotale(st.toString().replace('.', ',')) : setSommeTotale(st)
         
-    }, [compteurAdulte, compteurEnfant])
+    }, [compteurAdulte, compteurEnfant, navigate, location.state.nom])
 
     const handleSubmit = (e) => {
         e.preventDefault();
